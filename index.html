@@ -1,329 +1,471 @@
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Verkeersbord Quiz</title>
-<style>
-  :root {
-    --bg: #0f172a;
-    --card: #1e293b;
-    --text: #f1f5f9;
-    --muted: #cbd5e1;
-    --accent: #facc15;
-    --good: #22c55e;
-    --bad: #ef4444;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    background: radial-gradient(circle at top, #1e3a8a 0%, var(--bg) 60%);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-  }
-  .app { width: 100%; max-width: 760px; }
-  h1 { text-align: center; margin: 10px 0 4px; font-size: 2rem; }
-  .sub { text-align: center; color: var(--muted); margin-bottom: 20px; }
-  .card {
-    background: var(--card);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 16px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-  }
-  .hud { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-  .pill {
-    background: #0b1220;
-    border-radius: 999px;
-    padding: 8px 16px;
-    font-weight: 700;
-  }
-  .pill span { color: var(--accent); }
-  .target { text-align: center; padding: 10px 0; }
-  .target .emoji { font-size: 4rem; }
-  .target .label { font-size: 1.6rem; font-weight: 800; }
-  .target .hint { color: var(--muted); }
-  #webcam-container { display: flex; justify-content: center; }
-  #webcam-container canvas {
-    border-radius: 14px;
-    max-width: 100%;
-    height: auto;
-    border: 4px solid var(--accent);
-  }
-  .timebar { height: 10px; background: #0b1220; border-radius: 999px; overflow: hidden; margin-top: 14px; }
-  .timebar > div { height: 100%; width: 100%; background: var(--accent); transition: width 0.2s linear; }
-  .bars { display: grid; gap: 8px; }
-  .bar-row { display: grid; grid-template-columns: 150px 1fr 50px; align-items: center; gap: 10px; font-size: 0.95rem; }
-  .bar-bg { background: #0b1220; border-radius: 999px; height: 14px; overflow: hidden; }
-  .bar-fill { height: 100%; width: 0%; background: #38bdf8; transition: width 0.1s; }
-  .bar-row.active .bar-fill { background: var(--good); }
-  button {
-    background: var(--accent);
-    color: #1e1b00;
-    border: 0;
-    border-radius: 12px;
-    padding: 14px 28px;
-    font-size: 1.1rem;
-    font-weight: 800;
-    cursor: pointer;
-  }
-  button:hover { filter: brightness(1.08); }
-  button:disabled { opacity: 0.5; cursor: wait; }
-  .center { text-align: center; }
-  .flash { animation: flash 0.6s; }
-  @keyframes flash {
-    0% { background: var(--good); }
-    100% { background: var(--card); }
-  }
-  .flash-bad { animation: flashbad 0.6s; }
-  @keyframes flashbad {
-    0% { background: var(--bad); }
-    100% { background: var(--card); }
-  }
-  .hidden { display: none; }
-  .error { color: #fecaca; background: #7f1d1d; padding: 12px; border-radius: 10px; margin-top: 12px; }
-  .final { font-size: 3rem; font-weight: 900; color: var(--accent); }
-  footer { text-align: center; color: var(--muted); font-size: 0.85rem; margin: 20px 0; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verkeersbord Quiz</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f1f5f9;
+      --muted: #cbd5e1;
+      --accent: #facc15;
+      --good: #22c55e;
+      --bad: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1e3a8a 0%, var(--bg) 60%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 760px;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 10px 0 4px;
+      font-size: 2rem;
+    }
+
+    .sub {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      background: #0b1220;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-weight: 700;
+    }
+
+    .pill span {
+      color: var(--accent);
+    }
+
+    .target {
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .target .emoji {
+      font-size: 4rem;
+    }
+
+    .target .label {
+      font-size: 1.6rem;
+      font-weight: 800;
+    }
+
+    .target .hint {
+      color: var(--muted);
+    }
+
+    #webcam-container {
+      display: flex;
+      justify-content: center;
+    }
+
+    #webcam-container canvas {
+      border-radius: 14px;
+      max-width: 100%;
+      height: auto;
+      border: 4px solid var(--accent);
+    }
+
+    .timebar {
+      height: 10px;
+      background: #0b1220;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 14px;
+    }
+
+    .timebar>div {
+      height: 100%;
+      width: 100%;
+      background: var(--accent);
+      transition: width 0.2s linear;
+    }
+
+    .bars {
+      display: grid;
+      gap: 8px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 50px;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+    }
+
+    .bar-bg {
+      background: #0b1220;
+      border-radius: 999px;
+      height: 14px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: #38bdf8;
+      transition: width 0.1s;
+    }
+
+    .bar-row.active .bar-fill {
+      background: var(--good);
+    }
+
+    button {
+      background: var(--accent);
+      color: #1e1b00;
+      border: 0;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    button:hover {
+      filter: brightness(1.08);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: wait;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .flash {
+      animation: flash 0.6s;
+    }
+
+    @keyframes flash {
+      0% {
+        background: var(--good);
+      }
+
+      100% {
+        background: var(--card);
+      }
+    }
+
+    .flash-bad {
+      animation: flashbad 0.6s;
+    }
+
+    @keyframes flashbad {
+      0% {
+        background: var(--bad);
+      }
+
+      100% {
+        background: var(--card);
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .error {
+      color: #fecaca;
+      background: #7f1d1d;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 12px;
+    }
+
+    .final {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--accent);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin: 20px 0;
+    }
+  </style>
 </head>
+
 <body>
-<div class="app">
-  <h1>🚦 Verkeersbord Quiz</h1>
-  <div class="sub">Toon het juiste bord aan je webcam en scoor punten!</div>
+  <div class="app">
+    <h1>🚦 Verkeersbord Quiz</h1>
+    <div class="sub">Toon het juiste bord aan je webcam en scoor punten!</div>
 
-  <div class="card center" id="start-card">
-    <p>Je krijgt 8 borden. Per bord heb je 15 seconden. Hoe sneller je het toont, hoe meer punten je krijgt.</p>
-    <button id="start-btn">Start het spel</button>
-    <div id="error" class="error hidden"></div>
-  </div>
-
-  <div id="game" class="hidden">
-    <div class="card hud">
-      <div class="pill">Ronde: <span id="round">0</span>/8</div>
-      <div class="pill">Score: <span id="score">0</span></div>
-      <div class="pill">Reeks: <span id="streak">0</span> 🔥</div>
+    <div class="card center" id="start-card">
+      <p>Je krijgt 8 borden. Per bord heb je 15 seconden. Hoe sneller je het toont, hoe meer punten je krijgt.</p>
+      <button id="start-btn">Start het spel</button>
+      <div id="error" class="error hidden"></div>
     </div>
 
-    <div class="card" id="target-card">
-      <div class="target">
-        <div class="emoji" id="t-emoji">🎯</div>
-        <div class="label" id="t-label">Maak je klaar...</div>
-        <div class="hint" id="t-hint">Houd het bord stil voor de camera</div>
+    <div id="game" class="hidden">
+      <div class="card hud">
+        <div class="pill">Ronde: <span id="round">0</span>/8</div>
+        <div class="pill">Score: <span id="score">0</span></div>
+        <div class="pill">Reeks: <span id="streak">0</span> 🔥</div>
       </div>
-      <div class="timebar"><div id="timebar"></div></div>
+
+      <div class="card" id="target-card">
+        <div class="target">
+          <div class="emoji" id="t-emoji">🎯</div>
+          <div class="label" id="t-label">Maak je klaar...</div>
+          <div class="hint" id="t-hint">Houd het bord stil voor de camera</div>
+        </div>
+        <div class="timebar">
+          <div id="timebar"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div id="webcam-container"></div>
+      </div>
+
+      <div class="card">
+        <div class="bars" id="bars"></div>
+      </div>
     </div>
 
-    <div class="card">
-      <div id="webcam-container"></div>
+    <div class="card center hidden" id="end-card">
+      <h2>Spel afgelopen!</h2>
+      <div class="final"><span id="final-score">0</span> punten</div>
+      <p id="final-msg"></p>
+      <button id="again-btn">Opnieuw spelen</button>
     </div>
 
-    <div class="card">
-      <div class="bars" id="bars"></div>
-    </div>
+    <footer>Gemaakt met Teachable Machine (AutoML) en TensorFlow.js</footer>
   </div>
 
-  <div class="card center hidden" id="end-card">
-    <h2>Spel afgelopen!</h2>
-    <div class="final"><span id="final-score">0</span> punten</div>
-    <p id="final-msg"></p>
-    <button id="again-btn">Opnieuw spelen</button>
-  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+  <script>
+    // 1. PLAK HIER JE EIGEN MODEL-LINK (eindigt op een slash)
+    const MODEL_URL = "https://teachablemachine.withgoogle.com/models/UjdHpJzzG/";
 
-  <footer>Gemaakt met Teachable Machine (AutoML) en TensorFlow.js</footer>
-</div>
+    // 2. Spelinstellingen
+    const TOTAL_ROUNDS = 8;
+    const ROUND_SECONDS = 15;
+    const CONFIDENCE = 0.9;   // zekerheid die nodig is
+    const HOLD_MS = 800;      // zo lang moet het bord herkend blijven
 
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
-<script>
-  // 1. PLAK HIER JE EIGEN MODEL-LINK (eindigt op een slash)
-  const MODEL_URL = "https://teachablemachine.withgoogle.com/models/JOUW_CODE/";
+    // Emoji's per bordnaam (alleen voor het leuke, de naam moet in je klasse zitten)
+    const EMOJIS = {
+      "stop": "🛑",
+      "voorrang": "🔶",
+      "verboden": "⛔",
+      "parkeren": "🅿️"
+    };
+    function emojiFor(label) {
+      const l = label.toLowerCase();
+      for (const key in EMOJIS) if (l.includes(key)) return EMOJIS[key];
+      return "🚸";
+    }
 
-  // 2. Spelinstellingen
-  const TOTAL_ROUNDS = 8;
-  const ROUND_SECONDS = 15;
-  const CONFIDENCE = 0.9;   // zekerheid die nodig is
-  const HOLD_MS = 800;      // zo lang moet het bord herkend blijven
+    let model, webcam, labels = [], targets = [];
+    let running = false, playing = false;
+    let round = 0, score = 0, streak = 0;
+    let currentTarget = null, roundStart = 0, holdStart = null, lastPredictions = [];
 
-  // Emoji's per bordnaam (alleen voor het leuke, de naam moet in je klasse zitten)
-  const EMOJIS = {
-    "stop": "🛑",
-    "voorrang": "🔶",
-    "verboden": "⛔",
-    "parkeren": "🅿️"
-  };
-  function emojiFor(label) {
-    const l = label.toLowerCase();
-    for (const key in EMOJIS) if (l.includes(key)) return EMOJIS[key];
-    return "🚸";
-  }
+    const $ = id => document.getElementById(id);
 
-  let model, webcam, labels = [], targets = [];
-  let running = false, playing = false;
-  let round = 0, score = 0, streak = 0;
-  let currentTarget = null, roundStart = 0, holdStart = null, lastPredictions = [];
-
-  const $ = id => document.getElementById(id);
-
-  $("start-btn").addEventListener("click", init);
-  $("again-btn").addEventListener("click", () => {
-    $("end-card").classList.add("hidden");
-    $("game").classList.remove("hidden");
-    startGame();
-  });
-
-  async function init() {
-    const btn = $("start-btn");
-    btn.disabled = true;
-    btn.textContent = "Model laden...";
-    $("error").classList.add("hidden");
-    try {
-      model = await tmImage.load(MODEL_URL + "model.json", MODEL_URL + "metadata.json");
-      labels = model.getClassLabels();
-      targets = labels.filter(l => !/geen/i.test(l));
-
-      webcam = new tmImage.Webcam(400, 400, true);
-      await webcam.setup();
-      await webcam.play();
-      $("webcam-container").appendChild(webcam.canvas);
-
-      buildBars();
-      $("start-card").classList.add("hidden");
+    $("start-btn").addEventListener("click", init);
+    $("again-btn").addEventListener("click", () => {
+      $("end-card").classList.add("hidden");
       $("game").classList.remove("hidden");
-      running = true;
-      window.requestAnimationFrame(loop);
       startGame();
-    } catch (e) {
-      console.error(e);
-      btn.disabled = false;
-      btn.textContent = "Start het spel";
-      const err = $("error");
-      err.textContent = "Er ging iets mis. Controleer je MODEL_URL, geef toegang tot de webcam en open de pagina via https of localhost.";
-      err.classList.remove("hidden");
+    });
+
+    async function init() {
+      const btn = $("start-btn");
+      btn.disabled = true;
+      btn.textContent = "Model laden...";
+      $("error").classList.add("hidden");
+      try {
+        model = await tmImage.load(MODEL_URL + "model.json", MODEL_URL + "metadata.json");
+        labels = model.getClassLabels();
+        targets = labels.filter(l => !/geen/i.test(l));
+
+        webcam = new tmImage.Webcam(400, 400, true);
+        await webcam.setup();
+        await webcam.play();
+        $("webcam-container").appendChild(webcam.canvas);
+
+        buildBars();
+        $("start-card").classList.add("hidden");
+        $("game").classList.remove("hidden");
+        running = true;
+        window.requestAnimationFrame(loop);
+        startGame();
+      } catch (e) {
+        console.error(e);
+        btn.disabled = false;
+        btn.textContent = "Start het spel";
+        const err = $("error");
+        err.textContent = "Er ging iets mis. Controleer je MODEL_URL, geef toegang tot de webcam en open de pagina via https of localhost.";
+        err.classList.remove("hidden");
+      }
     }
-  }
 
-  function buildBars() {
-    const box = $("bars");
-    box.innerHTML = "";
-    labels.forEach((l, i) => {
-      const row = document.createElement("div");
-      row.className = "bar-row";
-      row.id = "row-" + i;
-      row.innerHTML = '<div>' + l + '</div><div class="bar-bg"><div class="bar-fill" id="fill-' + i + '"></div></div><div id="pct-' + i + '">0%</div>';
-      box.appendChild(row);
-    });
-  }
+    function buildBars() {
+      const box = $("bars");
+      box.innerHTML = "";
+      labels.forEach((l, i) => {
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        row.id = "row-" + i;
+        row.innerHTML = '<div>' + l + '</div><div class="bar-bg"><div class="bar-fill" id="fill-' + i + '"></div></div><div id="pct-' + i + '">0%</div>';
+        box.appendChild(row);
+      });
+    }
 
-  async function loop() {
-    if (!running) return;
-    webcam.update();
-    await predict();
-    tick();
-    window.requestAnimationFrame(loop);
-  }
+    async function loop() {
+      if (!running) return;
+      webcam.update();
+      await predict();
+      tick();
+      window.requestAnimationFrame(loop);
+    }
 
-  async function predict() {
-    const prediction = await model.predict(webcam.canvas);
-    lastPredictions = prediction;
-    prediction.forEach((p, i) => {
-      const pct = Math.round(p.probability * 100);
-      $("fill-" + i).style.width = pct + "%";
-      $("pct-" + i).textContent = pct + "%";
-      $("row-" + i).classList.toggle("active", currentTarget === p.className && p.probability >= CONFIDENCE);
-    });
-  }
+    async function predict() {
+      const prediction = await model.predict(webcam.canvas);
+      lastPredictions = prediction;
+      prediction.forEach((p, i) => {
+        const pct = Math.round(p.probability * 100);
+        $("fill-" + i).style.width = pct + "%";
+        $("pct-" + i).textContent = pct + "%";
+        $("row-" + i).classList.toggle("active", currentTarget === p.className && p.probability >= CONFIDENCE);
+      });
+    }
 
-  function startGame() {
-    round = 0; score = 0; streak = 0;
-    $("score").textContent = 0;
-    $("streak").textContent = 0;
-    playing = true;
-    nextRound();
-  }
+    function startGame() {
+      round = 0; score = 0; streak = 0;
+      $("score").textContent = 0;
+      $("streak").textContent = 0;
+      playing = true;
+      nextRound();
+    }
 
-  function nextRound() {
-    round++;
-    if (round > TOTAL_ROUNDS) return endGame();
-    $("round").textContent = round;
-    // kies een nieuw doel dat verschilt van het vorige
-    let pick;
-    do { pick = targets[Math.floor(Math.random() * targets.length)]; }
-    while (targets.length > 1 && pick === currentTarget);
-    currentTarget = pick;
-    $("t-emoji").textContent = emojiFor(pick);
-    $("t-label").textContent = "Toon het bord: " + pick;
-    $("t-hint").textContent = "Houd het stil voor de camera";
-    holdStart = null;
-    roundStart = performance.now();
-  }
-
-  function tick() {
-    if (!playing || !currentTarget) return;
-    const elapsed = (performance.now() - roundStart) / 1000;
-    const left = Math.max(0, ROUND_SECONDS - elapsed);
-    $("timebar").style.width = (left / ROUND_SECONDS * 100) + "%";
-
-    const p = lastPredictions.find(x => x.className === currentTarget);
-    const ok = p && p.probability >= CONFIDENCE;
-
-    if (ok) {
-      if (holdStart === null) holdStart = performance.now();
-      if (performance.now() - holdStart >= HOLD_MS) return success(left);
-    } else {
+    function nextRound() {
+      round++;
+      if (round > TOTAL_ROUNDS) return endGame();
+      $("round").textContent = round;
+      // kies een nieuw doel dat verschilt van het vorige
+      let pick;
+      do { pick = targets[Math.floor(Math.random() * targets.length)]; }
+      while (targets.length > 1 && pick === currentTarget);
+      currentTarget = pick;
+      $("t-emoji").textContent = emojiFor(pick);
+      $("t-label").textContent = "Toon het bord: " + pick;
+      $("t-hint").textContent = "Houd het stil voor de camera";
       holdStart = null;
+      roundStart = performance.now();
     }
-    if (left <= 0) fail();
-  }
 
-  function success(timeLeft) {
-    const bonus = Math.round(timeLeft);
-    streak++;
-    const streakBonus = streak > 1 ? (streak - 1) * 2 : 0;
-    score += 10 + bonus + streakBonus;
-    $("score").textContent = score;
-    $("streak").textContent = streak;
-    flash("flash");
-    $("t-hint").textContent = "Goed zo! +" + (10 + bonus + streakBonus) + " punten";
-    pauseThenNext();
-  }
+    function tick() {
+      if (!playing || !currentTarget) return;
+      const elapsed = (performance.now() - roundStart) / 1000;
+      const left = Math.max(0, ROUND_SECONDS - elapsed);
+      $("timebar").style.width = (left / ROUND_SECONDS * 100) + "%";
 
-  function fail() {
-    streak = 0;
-    $("streak").textContent = 0;
-    flash("flash-bad");
-    $("t-hint").textContent = "Tijd om! Volgende bord...";
-    pauseThenNext();
-  }
+      const p = lastPredictions.find(x => x.className === currentTarget);
+      const ok = p && p.probability >= CONFIDENCE;
 
-  function flash(cls) {
-    const el = $("target-card");
-    el.classList.remove("flash", "flash-bad");
-    void el.offsetWidth;
-    el.classList.add(cls);
-  }
+      if (ok) {
+        if (holdStart === null) holdStart = performance.now();
+        if (performance.now() - holdStart >= HOLD_MS) return success(left);
+      } else {
+        holdStart = null;
+      }
+      if (left <= 0) fail();
+    }
 
-  function pauseThenNext() {
-    playing = false;
-    currentTarget = null;
-    setTimeout(() => { playing = true; nextRound(); }, 1200);
-  }
+    function success(timeLeft) {
+      const bonus = Math.round(timeLeft);
+      streak++;
+      const streakBonus = streak > 1 ? (streak - 1) * 2 : 0;
+      score += 10 + bonus + streakBonus;
+      $("score").textContent = score;
+      $("streak").textContent = streak;
+      flash("flash");
+      $("t-hint").textContent = "Goed zo! +" + (10 + bonus + streakBonus) + " punten";
+      pauseThenNext();
+    }
 
-  function endGame() {
-    playing = false;
-    currentTarget = null;
-    $("game").classList.add("hidden");
-    $("end-card").classList.remove("hidden");
-    $("final-score").textContent = score;
-    const max = TOTAL_ROUNDS * 25;
-    let msg = "Blijf oefenen!";
-    if (score > max * 0.7) msg = "Je bent een echte verkeersexpert! 🏆";
-    else if (score > max * 0.4) msg = "Goed bezig, bijna rijbewijsniveau! 🚗";
-    $("final-msg").textContent = msg;
-  }
-</script>
+    function fail() {
+      streak = 0;
+      $("streak").textContent = 0;
+      flash("flash-bad");
+      $("t-hint").textContent = "Tijd om! Volgende bord...";
+      pauseThenNext();
+    }
+
+    function flash(cls) {
+      const el = $("target-card");
+      el.classList.remove("flash", "flash-bad");
+      void el.offsetWidth;
+      el.classList.add(cls);
+    }
+
+    function pauseThenNext() {
+      playing = false;
+      currentTarget = null;
+      setTimeout(() => { playing = true; nextRound(); }, 1200);
+    }
+
+    function endGame() {
+      playing = false;
+      currentTarget = null;
+      $("game").classList.add("hidden");
+      $("end-card").classList.remove("hidden");
+      $("final-score").textContent = score;
+      const max = TOTAL_ROUNDS * 25;
+      let msg = "Blijf oefenen!";
+      if (score > max * 0.7) msg = "Je bent een echte verkeersexpert! 🏆";
+      else if (score > max * 0.4) msg = "Goed bezig, bijna rijbewijsniveau! 🚗";
+      $("final-msg").textContent = msg;
+    }
+  </script>
 </body>
+
 </html>
