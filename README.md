@@ -19,13 +19,11 @@ Beeld (Teachable Machine Image Project), eigen idee. Het spel vraagt om een bord
 Lokaal draaien: open de map met de Live Server extensie in VS Code (de camera werkt enkel via https of localhost).
 
 ## Hoe ik de dataset maakte
-- **Klassen:** Stop, Voorrangsweg, Verboden toegang, Parkeren en Geen bord.
-- **Bronnen:** afbeeldingen van Belgische verkeersborden uit de officiele wegcode (publiek domein), opgeslagen als screenshots op mijn gsm.
-- **Opnames:** in Teachable Machine nam ik per klasse beelden op met de webcam terwijl ik het bord (op mijn gsm-scherm) voor de camera hield. Ik varieerde de afstand, de hoek en de achtergrond.
-- **Aantal beelden per klasse:** [VUL IN, minstens 30]
-- **Momenten en licht:** [VUL IN, bv. ochtend met daglicht, avond met lamp]
-- **Klasse "Geen bord":** lege achtergronden en objecten, geen personen.
-- **Privacy:** er zijn geen personen gefotografeerd. Trainen en voorspellen gebeurt in de browser, de camerabeelden verlaten het toestel nooit en worden niet opgeslagen. Het model werd geexporteerd naar TensorFlow.js.
+- **Klassen en aantal beelden:** stopbord (425), Voorrangsbord (551), verboden toegang (528), parkeersbord (551) en niets aan het doen (206). In totaal 2261 beelden.
+- **Verkeersborden:** foto's van het internet. Ik koos zowel foto's van borden zonder achtergrond als foto's waarop het bord in een echte omgeving staat, met andere hoeken en andere dingen op de foto. Zo leert het model meerdere situaties kennen.
+- **Eerste versie:** mijn eerste model was vooral getraind met borden zonder achtergrond of niet-echte foto's. Daardoor keek het model te veel naar kleur en vorm. Daarom heb ik een nieuw model getraind met meer echte foto's.
+- **Klasse "niets aan het doen":** foto's die ik zelf binnen nam met mijn gsm, met mijn eigen gezicht.
+- **Privacy:** enkel mijn eigen gezicht staat in de dataset, met mijn eigen toestemming. Er zijn geen andere personen gefotografeerd. Trainen en voorspellen gebeurt in de browser, de camerabeelden van het spel worden niet opgeslagen en de trainingsfoto's staan niet in deze repository. Het model werd geëxporteerd naar TensorFlow.js.
 
 ## Technologie
 - Teachable Machine (AutoML), export naar TensorFlow.js
@@ -41,10 +39,14 @@ Lokaal draaien: open de map met de Live Server extensie in VS Code (de camera we
 
 Enkel een bijnaam en een score worden opgeslagen.
 
-## Beperkingen
-- Het model is getraind op schermafbeeldingen, dus het werkt mogelijk minder goed op geprinte of echte borden.
-- Slecht licht of reflecties op het scherm verlagen de zekerheid.
+## Beperkingen en bias
+- Het model kijkt vaak naar kleur en vorm. Bij een blauwe achtergrond twijfelt het soms omdat het parkeersbord ook blauw is, en het twijfelt soms tussen stopbord en verboden toegang omdat beide rood zijn.
+- De dataset bestaat vooral uit internetfoto's, dus het model werkt mogelijk minder goed op borden in andere omgevingen of bij slecht licht.
+- De klasse "niets aan het doen" bevat vooral mijn gezicht in dezelfde omgeving.
 - Het model kent enkel de 4 borden uit de dataset.
+
+## Mogelijke uitbreiding
+Het model testen op echte verkeersborden langs de straat.
 
 ## Bestanden
 - `index.html`: het spel
