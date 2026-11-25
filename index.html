@@ -326,7 +326,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     // 1. PLAK HIER JE EIGEN MODEL-LINK (eindigt op een slash)
-    const MODEL_URL = "https://teachablemachine.withgoogle.com/models/UjdHpJzzG/";
+    const MODEL_URL = "https://teachablemachine.withgoogle.com/models/_aiMl-9Yt/";
 
     // 1b. SUPABASE (scores opslaan). Zie supabase.sql en README.md.
     // De anon key is bedoeld om publiek te zijn, de beveiliging zit in de RLS-regels.
@@ -347,7 +347,7 @@
       "stop": "🛑",
       "voorrang": "🔶",
       "verboden": "⛔",
-      "parkeren": "🅿️"
+      "parkeer": "🅿️"
     };
     function emojiFor(label) {
       const l = label.toLowerCase();
@@ -377,7 +377,7 @@
       try {
         model = await tmImage.load(MODEL_URL + "model.json", MODEL_URL + "metadata.json");
         labels = model.getClassLabels();
-        targets = labels.filter(l => !/geen/i.test(l));
+        targets = labels.filter(l => !/geen|niets/i.test(l));
 
         // Achtercamera op smartphone (valt terug op de beschikbare camera op een laptop)
         webcam = new tmImage.Webcam(400, 400, false);
